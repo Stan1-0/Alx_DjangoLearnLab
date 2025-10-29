@@ -6,6 +6,4 @@ new_book=Book.objects.create(
     publication_year=1949
     )       
 
-
-
 # successful
