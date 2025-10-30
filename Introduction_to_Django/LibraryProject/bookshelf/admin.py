@@ -4,7 +4,7 @@ from .models import Book
 # Register your models here.
 class Bookadmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'publication_year')
-    lsit_filter = ('author', 'publication_year')
+    list_filter = ('author', 'publication_year')
 
 
 
