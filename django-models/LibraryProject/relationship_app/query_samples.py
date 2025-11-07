@@ -6,6 +6,6 @@ books.all()
 Author.objects.get(name=author_name)
 objects.filter(author=author)
 
-Librarian.object.get(library=librarian_name)
+Librarian.objects.get(library=librarian_name)
 
 
