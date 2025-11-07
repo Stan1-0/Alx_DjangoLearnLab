@@ -13,7 +13,8 @@ def list_all_books(request):
     return render(request, 'relationship_app/list_books.html',{'books': book_list})
 
 class LibraryDetailView(DetailView):
-    model = Library 
+    model = Library
+    template_name = 'relationship_app/library_dedtail.html' 
     context_object_name = 'library'
     
     def get_context_data(self, **kwargs):
