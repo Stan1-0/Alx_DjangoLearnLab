@@ -4,7 +4,7 @@ from .models import Library
 from django.views.generic.detail import DetailView
 
 # Create your views here.
-def list_all_books(request):
+def list_books(request):
     #Query all books and their associated authors
     books = Book.objects.all()
     
