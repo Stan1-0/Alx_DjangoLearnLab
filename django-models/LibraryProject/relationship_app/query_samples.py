@@ -7,6 +7,6 @@ Library.objects.get(name=library_name)
 Author.objects.get(name=author_name)
 objects.filter(author=author)
 
-Librarian.object.get(library_id)
+Librarian.objects.get(library=librarian)
 
 
