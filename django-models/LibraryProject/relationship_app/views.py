@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Book
-from .models import Library
+from .models import Library 
 from django.views.generic.detail import DetailView
 
 # Create your views here.
@@ -21,7 +21,7 @@ class LibraryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         library_id = self.kwargs['pk']
-        library_books = LibraryBook.objects.filter(library=library_id)
+        library_books = Library.objects.filter(library=library_id)
         books = [Book.objects.get(pk=book.book.id) for book in library_books]
 
         context.update({'books': books})
