@@ -49,7 +49,7 @@ class LoginView(LoginView):
 class LogoutView(LogoutView):
     template_name = "relationship_app/logout.html"
 
-def is_admin(user):
+def Admin(user):
     """
     Check if user is authenticated and has 'admin' role.
     Only users with the 'Admin' role can access admin views.
@@ -63,23 +63,20 @@ def is_admin(user):
     except UserProfile.DoesNotExist:
         # User doesn't have a profile
         return False
-
-@user_passes_test(is_admin)
+@user_passes_test(Admin)
 def admin_dashboard(request):
     return render(request, 'relationship_app/admin_view.html')
 
 
-def is_librarian(user):
+def Librarian(user):
     return hasattr(user, 'profile') and user.profile.role == 'librarian'
-
-@user_passes_test(is_librarian)
+@user_passes_test(Librarian)
 def librarian_dashboard(request):
     return render(request, 'relationship_app/librarian_view.html')
 
 
-def is_member(user):
+def Member(user):
     return hasattr(user, 'profile') and user.profile.role == 'member'
-
-@user_passes_test(is_member)
+@user_passes_test(Member)
 def member_dashboard(request):
     return render(request, 'relationship_app/member_view.html')
