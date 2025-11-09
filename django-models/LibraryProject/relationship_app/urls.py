@@ -13,7 +13,7 @@ urlpatterns = [
     path("librarian/", views.librarian_dashboard, name="librarian_view"),
     path("member/", views.member_dashboard, name="member_view"),
     # Book CRUD views with permission checks
-    path("book/add/", views.book_create, name="book_create"),
-    path("book/<int:pk>/edit/", views.book_update, name="book_update"),
-    path("book/<int:pk>/delete/", views.book_delete, name="book_delete"),
+    path("add_book/", views.book_create, name="book_create"),
+    path("edit_book/", views.book_update, name="book_update"),
+    path("delete_book/", views.book_delete, name="book_delete"),
 ]
