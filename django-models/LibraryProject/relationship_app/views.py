@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from .forms import BookForm
-
+from django.contrib.auth import login
 # Create your views here.
 def list_books(request):
     #Query all books and their associated authors
