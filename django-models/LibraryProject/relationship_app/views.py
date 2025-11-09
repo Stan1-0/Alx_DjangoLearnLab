@@ -4,6 +4,9 @@ from .models import Library
 from django.views.generic.detail import DetailView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+from .models import UserProfile
 
 # Create your views here.
 def list_books(request):
@@ -46,3 +49,37 @@ class LoginView(LoginView):
 class LogoutView(LogoutView):
     template_name = "relationship_app/logout.html"
 
+def is_admin(user):
+    """
+    Check if user is authenticated and has 'admin' role.
+    Only users with the 'Admin' role can access admin views.
+    """
+    # Check if user is authenticated first
+    if not user.is_authenticated:
+        return False
+    # Safely check if user has a profile and if the role is 'admin'
+    try:
+        return user.profile.role == 'admin'
+    except UserProfile.DoesNotExist:
+        # User doesn't have a profile
+        return False
+
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+
+def is_librarian(user):
+    return hasattr(user, 'profile') and user.profile.role == 'librarian'
+
+@user_passes_test(is_librarian)
+def librarian_dashboard(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+def is_member(user):
+    return hasattr(user, 'profile') and user.profile.role == 'member'
+
+@user_passes_test(is_member)
+def member_dashboard(request):
+    return render(request, 'relationship_app/member_view.html')
