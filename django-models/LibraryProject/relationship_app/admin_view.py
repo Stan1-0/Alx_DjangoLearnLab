@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
-from django.core.exceptions import ObjectDoesNotExist
+from .models import UserProfile
 
 def is_admin(user):
     """
@@ -13,7 +13,7 @@ def is_admin(user):
     # Safely check if user has a profile and if the role is 'admin'
     try:
         return user.profile.role == 'admin'
-    except ObjectDoesNotExist:
+    except UserProfile.DoesNotExist:
         # User doesn't have a profile
         return False
 
