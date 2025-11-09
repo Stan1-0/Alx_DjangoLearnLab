@@ -12,5 +12,8 @@ urlpatterns = [
     path("admin/", views.admin_dashboard, name="admin_view"),
     path("librarian/", views.librarian_dashboard, name="librarian_view"),
     path("member/", views.member_dashboard, name="member_view"),
-
+    # Book CRUD views with permission checks
+    path("book/add/", views.book_create, name="book_create"),
+    path("book/<int:pk>/edit/", views.book_update, name="book_update"),
+    path("book/<int:pk>/delete/", views.book_delete, name="book_delete"),
 ]
