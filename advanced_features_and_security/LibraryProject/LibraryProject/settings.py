@@ -130,3 +130,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = "home"
+
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
