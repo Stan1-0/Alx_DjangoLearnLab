@@ -13,7 +13,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["email", "password"]}),
         ("Personal info", {"fields": ["date_of_birth"]}),
-        ("Permissions", {"fields": ["is_admin"]}),
+        ("Permissions", {"fields": ["is_staff", "is_superuser"]}),
     ]
    
     add_fieldsets = [

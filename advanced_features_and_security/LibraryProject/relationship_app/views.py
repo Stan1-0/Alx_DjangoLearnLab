@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from .forms import BookForm
 from django.contrib.auth import login
+
 # Create your views here.
 def list_books(request):
     #Query all books and their associated authors
@@ -80,7 +81,7 @@ def member_dashboard(request):
 
 
 # Book CRUD views with permission checks
-@permission_required('relationship_app.can_add_book')
+@permission_required('relationship_app.can_add_book', raise_exception=True)
 def book_create(request):
     """
     View to create a new book.
@@ -97,7 +98,7 @@ def book_create(request):
     return render(request, 'relationship_app/book_form.html', {'form': form, 'title': 'Add Book'})
 
 
-@permission_required('relationship_app.can_change_book')
+@permission_required('relationship_app.can_change_book', raise_exception=True)
 def book_update(request, pk):
     """
     View to update an existing book.
@@ -115,7 +116,7 @@ def book_update(request, pk):
     return render(request, 'relationship_app/book_form.html', {'form': form, 'title': 'Edit Book', 'book': book})
 
 
-@permission_required('relationship_app.can_delete_book')
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
 def book_delete(request, pk):
     """
     View to delete a book.
