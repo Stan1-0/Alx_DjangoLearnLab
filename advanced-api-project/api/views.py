@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import filters
 
 # Create your views here.
-work = filters.OrderingFilter
+work = filters.OrderingFilter, filters.SearchFilter
 
 class AuthorCreateView(generics.CreateAPIView):
     queryset = Author.objects.all()
