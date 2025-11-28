@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django_filters import rest_framework
 from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .serializers import *
