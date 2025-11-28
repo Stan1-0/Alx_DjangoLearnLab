@@ -3,7 +3,7 @@ from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 # Create your views here.
 class BookListView(generics.ListAPIView):
@@ -13,15 +13,20 @@ class BookListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['title', 'author', 'publication_year']
     search_fields = ['title', 'author']
+    ordering_fields = ['title', 'publication_year']
     
     permission_classes =[permissions.AllowAny]
     
     def get_queryset(self):
+        #checking for search term in request
         queryset = super().get_queryset(self)
-        return queryset.filter(
-            Q(title_icontains=self.request.GET.get('search')) |
-            Q(author_icontains=self.request.GET.get('search'))   
-        )
+        search_term = self.request.GET.get('search')
+        if search_term:
+            queryset = queryset.filter(
+                Q(title__icontains=search_term) |
+                Q(author__icontains=search_term)   
+            )
+        return queryset
         
     
 class BookDetailView(generics.RetrieveAPIView):
@@ -29,7 +34,7 @@ class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
     
 class BookCreateView(generics.CreateAPIView):
@@ -37,7 +42,7 @@ class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def perform_create(self, serializer):
         today = date.today().year
@@ -51,7 +56,7 @@ class BookUpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def perform_update(self, serializer):
         today = date.today().year
@@ -67,6 +72,6 @@ class BookDeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     
