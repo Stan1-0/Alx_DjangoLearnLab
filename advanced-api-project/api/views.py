@@ -10,7 +10,7 @@ from datetime import date
 
 # Create your views here.
 work = filters.OrderingFilter, filters.SearchFilter
-login = self.client.login()
+
 
 class AuthorCreateView(generics.CreateAPIView):
     queryset = Author.objects.all()
