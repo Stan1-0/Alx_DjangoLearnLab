@@ -56,7 +56,7 @@ class BookCreateView(generics.CreateAPIView):
         if serializer.validated_data['publication_year'] > today:
             raise serializers.ValidationError("Publication year cannot be in the future")
         
-        serializer.save(author=self.request.Author)
+        serializer.save()
     
 class BookUpdateView(generics.UpdateAPIView):
     #view for updating an existing book(PUT)

@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from .models import Author, Book
 
-login = self.client.login()
+#login = self.client.login()
+
 class BookAPITestCase(APITestCase):
     """Test suite for Book API endpoints"""
     
