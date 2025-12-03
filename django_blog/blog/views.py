@@ -21,7 +21,7 @@ def register(request):
 
     return render(request, "blog/register.html", context)
 
-def login_view(request):
+def profile(request):
     if request.user.is_authenticated:
         return redirect('home')
     
