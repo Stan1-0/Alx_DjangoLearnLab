@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -159,11 +160,12 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(self.request, 'Post deleted successfully!')
         return super().delete(request, *args, **kwargs)
 
+@login_required(login_url='/blog/login/')
 def profile(request):
-    if not request.user.is_authenticated:
-        messages.warning(request, 'Please log in to view your profile.')
-        return redirect('login')
-    
+    """
+    Profile view for displaying user information and their posts.
+    Requires authentication - only logged-in users can view their profile.
+    """
     # Get user's posts
     user_posts = Post.objects.filter(author=request.user).order_by('-published_date')
     context = {
