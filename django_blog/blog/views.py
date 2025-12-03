@@ -21,7 +21,7 @@ def register(request):
 
     return render(request, "blog/register.html", context)
 
-def profile(request):
+def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
     
@@ -63,3 +63,16 @@ def posts(request):
     posts_list = Post.objects.all().order_by('-published_date')
     context = {'posts': posts_list}
     return render(request, "blog/posts.html", context)
+
+def profile(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please log in to view your profile.')
+        return redirect('login')
+    
+    # Get user's posts
+    user_posts = Post.objects.filter(author=request.user).order_by('-published_date')
+    context = {
+        'user': request.user,
+        'user_posts': user_posts,
+    }
+    return render(request, "blog/profile.html", context)

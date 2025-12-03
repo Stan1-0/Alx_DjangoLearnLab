@@ -1,0 +1,38 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Profile - Django Blog{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>User Profile</h2>
+    
+    <div class="profile-info">
+        <h3>{{ user.username }}</h3>
+        <p><strong>First Name:</strong> {{ user.first_name|default:"Not set" }}</p>
+        <p><strong>Last Name:</strong> {{ user.last_name|default:"Not set" }}</p>
+        <p><strong>Email:</strong> {{ user.email|default:"Not set" }}</p>
+        <p><strong>Date Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+    </div>
+    
+    <div class="user-posts">
+        <h3>Your Posts ({{ user_posts.count }})</h3>
+        {% if user_posts %}
+            <div class="posts-list">
+                {% for post in user_posts %}
+                    <div class="post-item">
+                        <h4><a href="#">{{ post.title }}</a></h4>
+                        <p class="post-meta">
+                            Published on {{ post.published_date|date:"F d, Y" }}
+                        </p>
+                        <p class="post-content">{{ post.content|truncatewords:30 }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You haven't created any posts yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
