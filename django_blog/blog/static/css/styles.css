@@ -320,3 +320,226 @@ footer {
     flex-direction: column;
     gap: 20px;
 }
+
+.user-posts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.post-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.post-item-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-edit-small {
+    padding: 5px 12px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.btn-edit-small:hover {
+    background-color: #45a049;
+}
+
+.btn-delete-small {
+    padding: 5px 12px;
+    background-color: #f44336;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.btn-delete-small:hover {
+    background-color: #da190b;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.page-link {
+    padding: 8px 16px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.page-link:hover {
+    background-color: #555;
+}
+
+.page-info {
+    padding: 8px 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Posts Header Styles */
+.posts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+/* Post Detail Styles */
+.post-detail-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.post-detail-header h1 {
+    color: #333;
+    flex: 1;
+    margin: 0;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: #45a049;
+}
+
+.btn-delete {
+    padding: 8px 16px;
+    background-color: #f44336;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+    background-color: #da190b;
+}
+
+.post-meta-detail {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+}
+
+.post-meta-detail p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.post-content-detail {
+    color: #333;
+    line-height: 1.8;
+    font-size: 16px;
+    margin-bottom: 30px;
+    white-space: pre-wrap;
+}
+
+.post-navigation {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+/* Form Actions Styles */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    padding: 12px 24px;
+    background-color: #666;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background-color: #555;
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+    text-align: center;
+}
+
+.delete-confirmation p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.post-preview {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    text-align: left;
+    border-left: 4px solid #f44336;
+}
+
+.post-preview h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.delete-form {
+    margin-top: 30px;
+}

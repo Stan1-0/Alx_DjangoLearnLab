@@ -16,12 +16,21 @@
     </div>
     
     <div class="user-posts">
-        <h3>Your Posts ({{ user_posts.count }})</h3>
+        <div class="user-posts-header">
+            <h3>Your Posts ({{ user_posts.count }})</h3>
+            <a href="{% url 'post-create' %}" class="btn-link">Create New Post</a>
+        </div>
         {% if user_posts %}
             <div class="posts-list">
                 {% for post in user_posts %}
                     <div class="post-item">
-                        <h4><a href="#">{{ post.title }}</a></h4>
+                        <div class="post-item-header">
+                            <h4><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h4>
+                            <div class="post-item-actions">
+                                <a href="{% url 'post-update' post.pk %}" class="btn-edit-small">Edit</a>
+                                <a href="{% url 'post-delete' post.pk %}" class="btn-delete-small">Delete</a>
+                            </div>
+                        </div>
                         <p class="post-meta">
                             Published on {{ post.published_date|date:"F d, Y" }}
                         </p>
