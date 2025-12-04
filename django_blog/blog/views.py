@@ -178,9 +178,10 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     login_url = '/blog/login/'
     
     def form_valid(self, form):
-        """Set the post and author before saving."""
+        """Set the post and author before saving. Ensure author cannot be tampered with."""
         post = Post.objects.get(pk=self.kwargs['post_pk'])
         form.instance.post = post
+        # Security: Always set author from request.user, never trust form data
         form.instance.author = self.request.user
         messages.success(self.request, 'Comment added successfully!')
         return super().form_valid(form)
@@ -201,20 +202,33 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     login_url = '/blog/login/'
     
     def form_valid(self, form):
-        """Show success message after updating."""
+        """Show success message after updating and ensure author cannot be changed."""
+        # Security check: Ensure the author hasn't been tampered with
+        comment = self.get_object()
+        if form.instance.author != comment.author:
+            form.instance.author = comment.author
         messages.success(self.request, 'Comment updated successfully!')
         return super().form_valid(form)
     
     def test_func(self):
         """Check if the current user is the author of the comment."""
+        if not self.request.user.is_authenticated:
+            return False
         comment = self.get_object()
         return self.request.user == comment.author
     
     def handle_no_permission(self):
         """Handle unauthorized access attempts."""
-        comment = self.get_object()
+        # Store comment before redirect to avoid multiple get_object() calls
+        try:
+            comment = self.get_object()
+            post_pk = comment.post.pk
+        except:
+            # If we can't get the comment, redirect to posts list
+            messages.error(self.request, 'You do not have permission to edit this comment.')
+            return redirect('posts')
         messages.error(self.request, 'You do not have permission to edit this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
+        return redirect('post-detail', pk=post_pk)
     
     def get_success_url(self):
         """Redirect back to the post detail page after editing."""
@@ -234,18 +248,32 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def test_func(self):
         """Check if the current user is the author of the comment."""
+        if not self.request.user.is_authenticated:
+            return False
         comment = self.get_object()
         return self.request.user == comment.author
     
     def handle_no_permission(self):
         """Handle unauthorized access attempts."""
-        comment = self.get_object()
+        # Store comment before redirect to avoid multiple get_object() calls
+        try:
+            comment = self.get_object()
+            post_pk = comment.post.pk
+        except:
+            # If we can't get the comment, redirect to posts list
+            messages.error(self.request, 'You do not have permission to delete this comment.')
+            return redirect('posts')
         messages.error(self.request, 'You do not have permission to delete this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
+        return redirect('post-detail', pk=post_pk)
     
     def delete(self, request, *args, **kwargs):
-        """Show success message after deletion."""
-        messages.success(self.request, 'Comment deleted successfully!')
+        """Show success message after deletion and verify permissions again."""
+        comment = self.get_object()
+        # Double-check permission before deletion (defense in depth)
+        if request.user != comment.author:
+            messages.error(request, 'You do not have permission to delete this comment.')
+            return redirect('post-detail', pk=comment.post.pk)
+        messages.success(request, 'Comment deleted successfully!')
         return super().delete(request, *args, **kwargs)
     
     def get_success_url(self):
