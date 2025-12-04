@@ -179,7 +179,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         """Set the post and author before saving. Ensure author cannot be tampered with."""
-        post = Post.objects.get(pk=self.kwargs['post_pk'])
+        post = Post.objects.get(pk=self.kwargs['pk'])
         form.instance.post = post
         # Security: Always set author from request.user, never trust form data
         form.instance.author = self.request.user
@@ -188,7 +188,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         """Redirect back to the post detail page after commenting."""
-        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['post_pk']})
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
