@@ -6,8 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .forms import RegistrationForm, PostForm
-from .models import Post
+from .forms import RegistrationForm, PostForm, CommentForm
+from .models import Post, Comment
 
 # Create your views here.
 def register(request):
@@ -81,12 +81,20 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     """
-    Detail view for displaying a single blog post.
+    Detail view for displaying a single blog post with comments.
     Accessible to all users (authenticated and unauthenticated).
     """
     model = Post
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
+    
+    def get_context_data(self, **kwargs):
+        """Add comments and comment form to the context."""
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()
+        context['comments'] = post.comments.all()
+        context['comment_form'] = CommentForm()
+        return context
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -159,6 +167,92 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         """Show success message after deletion."""
         messages.success(self.request, 'Post deleted successfully!')
         return super().delete(request, *args, **kwargs)
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    """
+    Create view for adding comments to blog posts.
+    Requires authentication - only logged-in users can create comments.
+    """
+    model = Comment
+    form_class = CommentForm
+    login_url = '/blog/login/'
+    
+    def form_valid(self, form):
+        """Set the post and author before saving."""
+        post = Post.objects.get(pk=self.kwargs['post_pk'])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Comment added successfully!')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        """Redirect back to the post detail page after commenting."""
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['post_pk']})
+
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Update view for editing existing comments.
+    Requires authentication AND only the comment author can edit.
+    """
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    login_url = '/blog/login/'
+    
+    def form_valid(self, form):
+        """Show success message after updating."""
+        messages.success(self.request, 'Comment updated successfully!')
+        return super().form_valid(form)
+    
+    def test_func(self):
+        """Check if the current user is the author of the comment."""
+        comment = self.get_object()
+        return self.request.user == comment.author
+    
+    def handle_no_permission(self):
+        """Handle unauthorized access attempts."""
+        comment = self.get_object()
+        messages.error(self.request, 'You do not have permission to edit this comment.')
+        return redirect('post-detail', pk=comment.post.pk)
+    
+    def get_success_url(self):
+        """Redirect back to the post detail page after editing."""
+        comment = self.get_object()
+        return reverse_lazy('post-detail', kwargs={'pk': comment.post.pk})
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Delete view for removing comments.
+    Requires authentication AND only the comment author can delete.
+    """
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+    context_object_name = 'comment'
+    login_url = '/blog/login/'
+    
+    def test_func(self):
+        """Check if the current user is the author of the comment."""
+        comment = self.get_object()
+        return self.request.user == comment.author
+    
+    def handle_no_permission(self):
+        """Handle unauthorized access attempts."""
+        comment = self.get_object()
+        messages.error(self.request, 'You do not have permission to delete this comment.')
+        return redirect('post-detail', pk=comment.post.pk)
+    
+    def delete(self, request, *args, **kwargs):
+        """Show success message after deletion."""
+        messages.success(self.request, 'Comment deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        """Redirect back to the post detail page after deletion."""
+        comment = self.get_object()
+        return reverse_lazy('post-detail', kwargs={'pk': comment.post.pk})
+
 
 @login_required(login_url='/blog/login/')
 def profile(request):

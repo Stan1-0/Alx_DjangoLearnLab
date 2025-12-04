@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post
+from .models import Post, Comment
 
 
 class RegistrationForm(UserCreationForm):
@@ -24,3 +24,64 @@ class PostForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
         }
+
+
+class CommentForm(forms.ModelForm):
+    """
+    Form for creating and updating comments.
+    Includes validation rules for content length and required fields.
+    """
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Write your comment here...',
+                'required': True,
+            }),
+        }
+        labels = {
+            'content': 'Comment',
+        }
+        help_texts = {
+            'content': 'Your comment must be between 10 and 2000 characters.',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        """Initialize the form and add custom attributes."""
+        super().__init__(*args, **kwargs)
+        self.fields['content'].widget.attrs.update({
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Write your comment here...',
+        })
+    
+    def clean_content(self):
+        """
+        Validate comment content:
+        - Must be at least 10 characters long
+        - Must not exceed 2000 characters
+        - Must not be empty or only whitespace
+        """
+        content = self.cleaned_data.get('content')
+        
+        if not content:
+            raise forms.ValidationError('Comment content is required.')
+        
+        # Strip whitespace and check length
+        content_stripped = content.strip()
+        
+        if len(content_stripped) < 10:
+            raise forms.ValidationError(
+                'Comment must be at least 10 characters long.'
+            )
+        
+        if len(content) > 2000:
+            raise forms.ValidationError(
+                'Comment cannot exceed 2000 characters.'
+            )
+        
+        # Return stripped content
+        return content_stripped

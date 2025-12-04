@@ -1,0 +1,47 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Edit Comment - Django Blog{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="form-header">
+        <h2>Edit Comment</h2>
+        <p class="form-subtitle">Update your comment below</p>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <div class="comment-preview">
+        <p><strong>Post:</strong> <a href="{% url 'post-detail' comment.post.pk %}">{{ comment.post.title }}</a></p>
+        <p class="comment-meta">Original comment posted on {{ comment.created_date|date:"F d, Y g:i A" }}</p>
+    </div>
+    
+    <form method="post" class="register-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.content.id_for_label }}">Comment:</label>
+            {{ form.content }}
+            {% if form.content.errors %}
+                <div class="error">{{ form.content.errors }}</div>
+            {% endif %}
+            {% if form.content.help_text %}
+                <small class="help-text">{{ form.content.help_text }}</small>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">Update Comment</button>
+            <a href="{% url 'post-detail' comment.post.pk %}" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

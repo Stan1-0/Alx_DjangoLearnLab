@@ -5,6 +5,14 @@
 
 {% block content %}
 <div class="post-detail-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     <div class="post-detail-header">
         <h1>{{ post.title }}</h1>
         {% if user.is_authenticated and user == post.author %}
@@ -26,6 +34,73 @@
     
     <div class="post-navigation">
         <a href="{% url 'posts' %}" class="btn-link">Back to All Posts</a>
+    </div>
+    
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <div class="comments-section-header">
+            <h3>Comments <span class="comment-count">({{ comments.count }})</span></h3>
+        </div>
+        
+        <!-- Comment Form (for authenticated users) -->
+        {% if user.is_authenticated %}
+            <div class="comment-form-container">
+                <h4><i class="icon-comment"></i> Add a Comment</h4>
+                <form method="post" action="{% url 'comment-create' post.pk %}" class="comment-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ comment_form.content }}
+                        {% if comment_form.content.errors %}
+                            <div class="error">{{ comment_form.content.errors }}</div>
+                        {% endif %}
+                        {% if comment_form.content.help_text %}
+                            <small class="help-text">{{ comment_form.content.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="submit-btn">Post Comment</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="login-prompt">
+                <p>Please <a href="{% url 'login' %}?next={% url 'post-detail' post.pk %}">login</a> to post a comment.</p>
+            </div>
+        {% endif %}
+        
+        <!-- Comments List -->
+        {% if comments %}
+            <div class="comments-list">
+                {% for comment in comments %}
+                    <div class="comment-item" id="comment-{{ comment.pk }}">
+                        <div class="comment-header">
+                            <div class="comment-author-info">
+                                <strong class="comment-author">{{ comment.author.username }}</strong>
+                                <span class="comment-date">{{ comment.created_date|date:"F d, Y" }} at {{ comment.created_date|date:"g:i A" }}</span>
+                            </div>
+                            {% if comment.updated_date != comment.created_date %}
+                                <span class="comment-edited-badge">edited</span>
+                            {% endif %}
+                        </div>
+                        <div class="comment-content">
+                            {{ comment.content|linebreaks }}
+                        </div>
+                        {% if user.is_authenticated and user == comment.author %}
+                            <div class="comment-actions">
+                                <a href="{% url 'comment-update' comment.pk %}" class="btn-edit-small" title="Edit comment">
+                                    <span>✏️</span> Edit
+                                </a>
+                                <a href="{% url 'comment-delete' comment.pk %}" class="btn-delete-small" title="Delete comment">
+                                    <span>🗑️</span> Delete
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
