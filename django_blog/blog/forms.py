@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post, Comment
+from .models import Post, Comment, Tag
+from taggit.forms import TagWidget, TagField
 
 
 class RegistrationForm(UserCreationForm):
@@ -20,10 +21,39 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content']
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-        }
+        
+    tags = forms.Field(
+        widget=TagWidget(attrs={'placeholder': 'Enter tags separated by commas'}),
+        required=False,
+    )
+
+    def clean_tags(self):
+        data = self.cleaned_data['tags']
+        if data:
+            # Convert comma-separated string to list of tags
+            tags_list = data.split(',')
+            # Strip whitespace from each tag
+            tags_list = [tag.strip() for tag in tags_list]
+            # Filter out empty tags
+            tags_list = [tag for tag in tags_list if tag]
+            
+            # Create new tags if they don't exist
+            existing_tags = Tag.objects.all()
+            new_tags = []
+            for tag in tags_list:
+                try:
+                    # If tag exists, add it to the queryset
+                    new_tag = Tag.objects.get(name__iexact=tag)
+                    new_tags.append(new_tag)
+                except Tag.DoesNotExist:
+                    # If tag doesn't exist, create it
+                    new_tag = Tag.objects.create(name=tag)
+                    new_tags.append(new_tag)
+            
+            # Update the cleaned data with the processed tags
+            self.cleaned_data['tags'] = new_tags
+        
+        return self.cleaned_data['tags']
 
 
 class CommentForm(forms.ModelForm):
