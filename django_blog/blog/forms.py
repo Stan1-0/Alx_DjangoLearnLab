@@ -20,7 +20,7 @@ class RegistrationForm(UserCreationForm):
 class PostForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
-        widget=TagWidget,
+        widget=TagWidget(),
         required=False
     )
 
