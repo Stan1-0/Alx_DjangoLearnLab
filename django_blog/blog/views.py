@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .forms import RegistrationForm, PostForm, CommentForm
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from django.db.models import Q
 
 # Create your views here.
@@ -306,7 +306,7 @@ def search(request):
         posts = Post.objects.filter(
             Q(title__icontains=query) |
             Q(content__icontains=query) |
-            Q(tags__name__iexact=query)
+            Q(tags__in=[tag.id for tag in Tag.objects.filter(name__iexact=query)])
         ).distinct()
 
         context = {
