@@ -306,6 +306,7 @@ def search(request):
         posts = Post.objects.filter(
             Q(title__icontains=query) |
             Q(content__icontains=query) |
+            Q(tags__name__icontains=query) |
             Q(tags__in=[tag.id for tag in Tag.objects.filter(name__iexact=query)])
         ).distinct()
 
