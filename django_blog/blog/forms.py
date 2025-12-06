@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Post, Comment, Tag
-from taggit.forms import TagWidget, TagField
+from taggit.forms import TagWidget
 
 
 class RegistrationForm(UserCreationForm):
@@ -18,14 +18,15 @@ class RegistrationForm(UserCreationForm):
 
 
 class PostForm(forms.ModelForm):
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=TagWidget,
+        required=False
+    )
+
     class Meta:
         model = Post
-        fields = ['title', 'content']
-        
-    tags = forms.Field(
-        widget=TagWidget(attrs={'placeholder': 'Enter tags separated by commas'}),
-        required=False,
-    )
+        fields = ['title', 'content', 'tags']
 
     def clean_tags(self):
         data = self.cleaned_data['tags']
