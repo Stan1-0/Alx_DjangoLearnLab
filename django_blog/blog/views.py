@@ -316,3 +316,17 @@ def search(request):
         }
         return render(request, 'blog/search_results.html', context)
     return redirect('posts')
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/tags.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag = Tag.objects.get(slug=self.kwargs['tag_slug'])
+        return Post.objects.filter(tags__in=[tag])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = Tag.objects.get(slug=self.kwargs['tag_slug'])
+        return context
