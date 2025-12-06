@@ -1,0 +1,21 @@
+{% extends 'blog/base.html' %} {% block title %}Search Results - Django Blog{%
+endblock %} {% block content %}
+<h1>Search Results for "{{ query }}"</h1>
+
+{% if posts %}
+<ul>
+  {% for post in posts %}
+  <li>
+    <h2><a href="{% url 'post-detail' pk=post.pk %}">{{ post.title }}</a></h2>
+    <p>{{ post.content|truncatewords:50 }}</p>
+    <small
+      >Posted by {{ post.author.username }} on {{ post.published_date }}</small
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No results found for "{{ query }}"</p>
+{% endif %}
+<a href="{% url 'posts' %}">Back to All Posts</a>
+{% endblock %}

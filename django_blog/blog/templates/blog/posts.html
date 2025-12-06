@@ -5,12 +5,18 @@
 
 {% block content %}
 <div class="posts-container">
+    <form action="{% url 'search' %}" method="get">
+        <input type="text" name="q" placeholder="Search by title, content, or tags...">
+        <button type="submit">Search</button>
+    </form>
     <div class="posts-header">
         <h2>Blog Posts</h2>
         {% if user.is_authenticated %}
             <a href="{% url 'post-create' %}" class="btn-link">Create New Post</a>
         {% endif %}
     </div>
+    
+    
     
     {% if posts %}
         <div class="posts-list">

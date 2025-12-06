@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .forms import RegistrationForm, PostForm, CommentForm
 from .models import Post, Comment
+from django.db.models import Q
 
 # Create your views here.
 def register(request):
@@ -295,3 +296,22 @@ def profile(request):
         'user_posts': user_posts,
     }
     return render(request, "blog/profile.html", context)
+
+def search(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        if not query:
+            return redirect('posts')
+
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__iexact=query)
+        ).distinct()
+
+        context = {
+            'query': query,
+            'posts': posts
+        }
+        return render(request, 'blog/search_results.html', context)
+    return redirect('posts')
