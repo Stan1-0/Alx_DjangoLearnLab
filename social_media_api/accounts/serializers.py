@@ -2,6 +2,9 @@ from accounts.models import CustomUser
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model
+
+#s = get_user_model().objects.create_user
 
 class CustomUserSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
