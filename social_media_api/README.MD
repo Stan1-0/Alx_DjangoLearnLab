@@ -254,7 +254,7 @@ Authorization: Token abc123
 
 ## 2️⃣ Create Post
 
-**POST** `/posts/`
+**POST** `/posts/api/`
 
 The `author` field is automatically set to the logged-in user.
 
