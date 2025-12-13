@@ -33,7 +33,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post_pk = self.kwargs.get('post_pk')
-        return Comment.objects.filter(post_id=post_pk)
+        queryset = Comment.objects.all()
+        
+        return queryset.filter(post_id=post_pk)
 
     def perform_create(self, serializer):
         post_pk = self.kwargs.get('post_pk')
