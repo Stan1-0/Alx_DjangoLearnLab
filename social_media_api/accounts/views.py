@@ -7,6 +7,7 @@ from .models import CustomUser
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
+
 # Create your views here.
 class CustomUserRegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -73,3 +74,6 @@ class GetFollowersListView(generics.ListAPIView):
 
     def get_queryset(self):
         return self.request.user.followers.all()
+    
+#permissions.IsAuthenticated
+#CustomUser.objects.all()
