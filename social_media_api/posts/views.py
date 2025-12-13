@@ -5,6 +5,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.shortcuts import get_object_or_404
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.generics import ListAPIView
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -57,3 +58,12 @@ class CommentViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You do not own this comment")
 
         return obj
+    
+class UserFeedView(ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')

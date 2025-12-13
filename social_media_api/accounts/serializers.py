@@ -7,12 +7,12 @@ from django.contrib.auth import get_user_model
 #s = get_user_model().objects.create_user
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    followers_count = serializers.SerializerMethodField()
-    following_count = serializers.SerializerMethodField()
+    following = serializers.StringRelatedField(many=True, read_only=True)
+    followers = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'followers_count', 'following_count']
+        fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'following', 'followers']
 
     def get_followers_count(self, obj):
         return obj.followers.count()
