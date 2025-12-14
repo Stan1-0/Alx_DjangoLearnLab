@@ -146,6 +146,146 @@ Authorization: Token <user_token>
 
 ---
 
+## Follows & Feed API
+
+### User Model Changes
+
+The `CustomUser` model has been extended to support social following functionality.
+
+```python
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    following = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='followers',
+        blank=True
+    )
+```
+
+**Key relationships:**
+
+* `user.following.all()` → users this user follows
+* `user.followers.all()` → users following this user
+
+---
+
+### Follow a User
+
+**Endpoint**
+
+```
+POST /accounts/follow/{user_id}/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "You are now following john_doe",
+  "following_count": 3
+}
+```
+
+---
+
+### Unfollow a User
+
+**Endpoint**
+
+```
+POST /accounts/unfollow/{user_id}/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "You unfollowed john_doe",
+  "following_count": 2
+}
+```
+
+---
+
+### Get Followers List
+
+**Endpoint**
+
+```
+GET /accounts/followers/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+[
+  {
+    "id": 2,
+    "username": "john_doe",
+    "email": "john@example.com",
+    "bio": "",
+    "profile_picture": null,
+    "followers_count": 1,
+    "following_count": 0
+  }
+]
+```
+
+---
+
+### User Feed (Posts from Followed Users)
+
+The feed returns posts created by users that the authenticated user follows.
+
+**Endpoint**
+
+```
+GET /posts/feed/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+[
+  {
+    "id": 5,
+    "title": "A post from someone I follow",
+    "content": "This post appears in my feed",
+    "author": 2,
+    "created_at": "2025-01-10T09:00:00Z"
+  }
+]
+```
+
+---
+
 ## Posts & Comments API
 
 > All endpoints below require authentication.
