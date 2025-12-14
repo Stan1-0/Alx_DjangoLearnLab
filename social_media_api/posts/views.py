@@ -9,6 +9,10 @@ from rest_framework.generics import ListAPIView
 from notifications.utils import create_notification
 from rest_framework .decorators import action
 
+#generics.get_object_or_404(Post, pk=pk) 
+#Like.objects.get_or_create(user=request.user, post=post) 
+# Notification.objects.create
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
