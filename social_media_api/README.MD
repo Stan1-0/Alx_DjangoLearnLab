@@ -195,6 +195,8 @@ Authorization: Token <user_token>
 }
 ```
 
+**Note:** When you follow a user, they receive a notification.
+
 ---
 
 ### Unfollow a User
@@ -261,7 +263,7 @@ The feed returns posts created by users that the authenticated user follows.
 **Endpoint**
 
 ```
-GET /posts/feed/
+GET /api/feed/
 ```
 
 **Headers**
@@ -297,7 +299,7 @@ Authorization: Token <user_token>
 #### List Posts
 
 ```
-GET /posts/
+GET /api/posts/
 ```
 
 **Response**
@@ -319,7 +321,7 @@ GET /posts/
 #### Create Post
 
 ```
-POST /posts/
+POST /api/posts/
 ```
 
 **Request Body**
@@ -336,10 +338,62 @@ POST /posts/
 #### Retrieve / Update / Delete Post
 
 ```
-GET    /posts/{id}/
-PUT    /posts/{id}/
-PATCH  /posts/{id}/
-DELETE /posts/{id}/
+GET    /api/posts/{id}/
+PUT    /api/posts/{id}/
+PATCH  /api/posts/{id}/
+DELETE /api/posts/{id}/
+```
+
+---
+
+### Likes
+
+#### Like a Post
+
+**Endpoint**
+
+```
+POST /api/posts/{id}/like/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "Post liked successfully."
+}
+```
+
+**Note:** The post author receives a notification when you like their post.
+
+---
+
+#### Unlike a Post
+
+**Endpoint**
+
+```
+POST /api/posts/{id}/unlike/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "Post unliked successfully."
+}
 ```
 
 ---
@@ -349,7 +403,7 @@ DELETE /posts/{id}/
 #### List Comments for a Post
 
 ```
-GET /posts/{post_id}/comments/
+GET /api/posts/{post_id}/comments/
 ```
 
 ---
@@ -357,7 +411,7 @@ GET /posts/{post_id}/comments/
 #### Create Comment
 
 ```
-POST /posts/{post_id}/comments/
+POST /api/posts/{post_id}/comments/
 ```
 
 **Request Body**
@@ -368,15 +422,204 @@ POST /posts/{post_id}/comments/
 }
 ```
 
+**Note:** The post author receives a notification when you comment on their post.
+
 ---
 
 #### Retrieve / Update / Delete Comment
 
 ```
-GET    /posts/{post_id}/comments/{id}/
-PUT    /posts/{post_id}/comments/{id}/
-PATCH  /posts/{post_id}/comments/{id}/
-DELETE /posts/{post_id}/comments/{id}/
+GET    /api/posts/{post_id}/comments/{id}/
+PUT    /api/posts/{post_id}/comments/{id}/
+PATCH  /api/posts/{post_id}/comments/{id}/
+DELETE /api/posts/{post_id}/comments/{id}/
+```
+
+---
+
+## Notifications API
+
+The notification system automatically creates notifications for important user interactions.
+
+### Notification Model
+
+```python
+class Notification(models.Model):
+    recipient = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='notifications')
+    actor = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='actions')
+    verb = models.CharField(max_length=255)
+    target = GenericForeignKey('target_content_type', 'target_object_id')
+    is_read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+```
+
+**Notifications are automatically created when:**
+
+* Someone follows you
+* Someone likes your post
+* Someone comments on your post
+
+---
+
+### Get All Notifications
+
+**Endpoint**
+
+```
+GET /notifications/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+[
+  {
+    "id": 1,
+    "actor": {
+      "id": 2,
+      "username": "jane_doe",
+      "email": "jane@example.com",
+      "bio": "",
+      "profile_picture": null
+    },
+    "verb": "liked your post",
+    "target_type": "post",
+    "target_id": 5,
+    "is_read": false,
+    "timestamp": "2025-01-10T14:30:00Z"
+  },
+  {
+    "id": 2,
+    "actor": {
+      "id": 3,
+      "username": "bob_smith",
+      "email": "bob@example.com",
+      "bio": "",
+      "profile_picture": null
+    },
+    "verb": "started following you",
+    "target_type": null,
+    "target_id": null,
+    "is_read": true,
+    "timestamp": "2025-01-09T10:15:00Z"
+  }
+]
+```
+
+**Note:** Unread notifications are displayed first, followed by read notifications.
+
+---
+
+### Get Unread Notifications Only
+
+**Endpoint**
+
+```
+GET /notifications/unread/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+[
+  {
+    "id": 1,
+    "actor": {
+      "id": 2,
+      "username": "jane_doe",
+      "email": "jane@example.com",
+      "bio": "",
+      "profile_picture": null
+    },
+    "verb": "commented on your post",
+    "target_type": "post",
+    "target_id": 8,
+    "is_read": false,
+    "timestamp": "2025-01-10T16:45:00Z"
+  }
+]
+```
+
+---
+
+### Mark Notification as Read
+
+**Endpoint**
+
+```
+POST /notifications/{notification_id}/read/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "Notification marked as read."
+}
+```
+
+---
+
+### Mark All Notifications as Read
+
+**Endpoint**
+
+```
+POST /notifications/read-all/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```json
+{
+  "message": "5 notifications marked as read."
+}
+```
+
+---
+
+### Delete a Notification
+
+**Endpoint**
+
+```
+DELETE /notifications/{notification_id}/delete/
+```
+
+**Headers**
+
+```
+Authorization: Token <user_token>
+```
+
+**Response**
+
+```
+204 No Content
 ```
 
 ---
@@ -386,3 +629,6 @@ DELETE /posts/{post_id}/comments/{id}/
 * Token authentication is required for all protected endpoints
 * Users can only modify their own posts and comments
 * Filtering, searching, and ordering are supported where applicable
+* Notifications are automatically created for follows, likes, and comments
+* Users cannot follow themselves or like their own posts
+* Unread notifications are prominently displayed first in notification lists
