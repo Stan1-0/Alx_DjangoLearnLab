@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import CustomUser
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from notifications.utils import create_notification
 
 
 # Create your views here.
@@ -47,12 +48,17 @@ class FollowUserView(generics.GenericAPIView):
             )
 
         request.user.following.add(user_to_follow)
+        
+        create_notification(
+            recipient=user_to_follow,
+            actor=request.user,
+            verb="started following you"
+        )
 
         return Response({
             "message": f"You are now following {user_to_follow.username}.",
             "following_count": request.user.following.count()
         })
-
 
 class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
